@@ -39,6 +39,12 @@ public class CarController {
         CarDto carDto = carService.getCarById(id);
         return ResponseEntity.ok(carDto);
     }
+    //3-a ID ile Araba Getirme
+    @GetMapping("/{id}")
+    public ResponseEntity<CarDto> foundCawrById(@PathVariable("id") Long id){
+        CarDto carDto = carService.getCarById(id);
+        return ResponseEntity.ok(carDto);
+    }
 
     //4-a Id'si verileni silelim
     @DeleteMapping("/delete/{id}")

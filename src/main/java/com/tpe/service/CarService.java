@@ -61,4 +61,23 @@ public class CarService {
         Car car = getCarDtoById(id);
         carRepository.delete(car);
     }
+
+    public List<CarDto> findCarDTOByBrand(String brand) {
+        List<Car> carList = carRepository.findCarByBrand(brand);
+        List<CarDto> carDtoList = new ArrayList<>();
+        CarDto carDto;
+        for (Car car : carList){
+            carDto = new CarDto(car);
+            carDtoList.add(carDto);
+        }
+        return carDtoList;
+    }
+
+    //stream yapisiyla yapmak
+    /*public List<CarDTO> findCarDTOByBrand(String brand) {
+    List<Car> carList = carRepository.findCarByBrand(brand);
+    return carList.stream()
+          .map(CarDTO::new)
+          .collect(Collectors.toList());
+    }*/
 }

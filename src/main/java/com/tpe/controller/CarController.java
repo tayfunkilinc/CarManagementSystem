@@ -1,5 +1,6 @@
 package com.tpe.controller;
 
+import com.tpe.domain.Car;
 import com.tpe.dto.CarDto;
 import com.tpe.service.CarService;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class CarController {
         return ResponseEntity.ok(carDto);
     }
     //3-a ID ile Araba Getirme
-    @GetMapping("/{id}")
+    @GetMapping("/a/{id}")
     public ResponseEntity<CarDto> foundCawrById(@PathVariable("id") Long id){
         CarDto carDto = carService.getCarById(id);
         return ResponseEntity.ok(carDto);
@@ -53,7 +54,21 @@ public class CarController {
         return ResponseEntity.ok("Arac Silindi ");
     }
 
+    /*RequestParam Kullanarak ID ile Araba Getir
+    HTTP Yöntemi: GET
+    URL: http://localhost:8080/cars/q?id=2*/
+    @GetMapping("/q")
+    public ResponseEntity<CarDto> getCarByIdRequestParam(@RequestParam(name = "id") Long id){
+        return ResponseEntity.ok(carService.getCarById(id));
+    }
 
-
+    /*RequestParam Kullanarak Modeline Göre Araba Getir
+    HTTP Yöntemi: GET
+    URL: http://localhost:8080/cars/search?model=Toyota*/
+    @GetMapping("/search")
+    public ResponseEntity<List<CarDto>> getCarsByBrand(@RequestParam(name = "brand") String brand) {
+        List<CarDto> carDTOList = carService.findCarDTOByBrand(brand);
+        return ResponseEntity.ok(carDTOList);
+    }
 
 }

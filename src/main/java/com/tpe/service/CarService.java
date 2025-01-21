@@ -6,7 +6,14 @@ import com.tpe.exception.CarNotFoundException;
 import com.tpe.repository.CarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -45,20 +52,20 @@ public class CarService {
     }
 
     //3-b
-    public Car getCarDtoById(Long id) {
+    public Car getCarById(Long id) {
 
         Car car = carRepository.findById(id).orElseThrow(()->new CarNotFoundException("Car Not Found!!!"));
         return car;
     }
 
-    public CarDto getCarById(Long id) {
-        Car cars = getCarDtoById(id);
+    public CarDto getCarDtoById(Long id) {
+        Car cars = getCarById(id);
         return new CarDto(cars);
     }
 
 
     public void deleteById(Long id) {
-        Car car = getCarDtoById(id);
+        Car car = getCarById(id);
         carRepository.delete(car);
     }
 
@@ -73,6 +80,35 @@ public class CarService {
         return carDtoList;
     }
 
+    //1.yol
+    /*public Page<Car> getDtoPage(Pageable pageable) {
+        return carRepository.findAll(pageable);
+    }*/
+
+    //2.yol
+    public Page<CarDto> getDtoPage(Pageable pageable) {
+        Page<Car> carPage = carRepository.findAll(pageable);
+        return carPage.map(CarDto::new);
+    }
+
+    //3.yol
+    public Page<CarDto> getDTOPage2(Pageable pageable) {
+        Page<Car> carPage = carRepository.findAll(pageable);
+        List<CarDto> carDTOList = new ArrayList<>();
+        for (Car car : carPage) {
+            carDTOList.add(new CarDto(car));
+        }
+        return new PageImpl<>(carDTOList, pageable, carPage.getTotalElements());
+    }
+
+    /*PageImpl, Spring Data JPA tarafından sağlanan bir sınıftır ve Page arayüzünün somut bir uygulamasıdır.
+     Page arayüzü, sayfalama ve sıralama işlemleri için kullanılır ve PageImpl bu arayüzü uygulayarak
+     sayfalama sonuçlarını temsil eder.
+     PageImpl sınıfı, bir listeyi sayfalama bilgileriyle birlikte döndürmek için kullanılır.
+    Örneğin, PageImpl kullanarak bir List<CarDTO> nesnesini sayfalama bilgileriyle birlikte döndürebilirsiniz.
+    Bu, sayfalama işlemlerinde kullanışlıdır çünkü sayfa numarası, sayfa boyutu ve toplam eleman sayısı gibi
+    bilgileri içerir.*/
+
     //stream yapisiyla yapmak
     /*public List<CarDTO> findCarDTOByBrand(String brand) {
     List<Car> carList = carRepository.findCarByBrand(brand);
@@ -80,4 +116,18 @@ public class CarService {
           .map(CarDTO::new)
           .collect(Collectors.toList());
     }*/
+
+    public void updateCarDtoById(Long id, @Valid CarDto carDto) {
+        Car car = getCarById(id);
+        car.setYear(carDto.getYear());
+        car.setColor(carDto.getColor());
+        car.setBrand(carDto.getBrand());
+        carRepository.save(car);
+    }
+
+
+
+
+
+
 }

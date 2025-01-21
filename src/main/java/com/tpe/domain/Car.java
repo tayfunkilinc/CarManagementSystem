@@ -2,6 +2,7 @@ package com.tpe.domain;
 
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,4 +38,8 @@ public class Car {
     @Column(nullable = false)
     @NotNull(message = "Bos Gecilemez")
     private Integer year;
+
+    @ManyToOne
+    @JsonIgnore
+    private Owner owner;
 }
